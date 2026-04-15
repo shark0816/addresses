@@ -59,7 +59,6 @@ xn--b6gac.eu.org:443#xn--b6gac.eu.org
 115155.xyz:443#115155.xyz
 777.ai7777777.xyz:443#777.ai7777777.xyz
 8.889288.xyz:443#8.889288.xyz
-Youxuan.cf.090227.xyz:443#中国·三网优化 (Cloudflare)
 cf.030101.xyz:443#全球·全能优选 (Cloudflare)
 cf.877774.xyz:443#中国·优化线路 (秋名山)
 cloudflare.seeck.cn:443#中国·三网通用
@@ -71,7 +70,6 @@ edgeone.19931110.xyz:443#中国/香港·腾讯云EdgeOne
 cloudflare-ech.com:443#美国·CF基础设施(ECH)
 bestcf.top:443#中国·CF顶配
 cdn.tzpro.xyz:443#中国·TZPRO
-cf.090227.xyz:443#中国·CF优选
 cf.tencentapp.cn:443#中国·腾讯云
 bestcf.030101.xyz:443#中国·最优CFMingYu维护
 cdn.2020111.xyz:443#中国·CDN
@@ -89,17 +87,25 @@ cdn.onesignal.com:443#美国·推送服务
 www.udemy.com:443#美国·在线教育
 www.glassdoor.com:443#美国·职场平台
 staticdelivery.nexusmods.com:443#美国/欧洲·NexusMods
-cf.090227.xyz:2053#三网智能
-​cm.090227.xyz:2087#移动专属
-​cu.090227.xyz:2096#联通专属
-​ct.090227.xyz:8443#电信专属
-​visa.cn:443#全球高权重
-​itunes.apple.com:2053#亚太边缘
-​www.gov.se:2096#欧美优选
-​www.csgo.com:8443#低延迟游戏
-​bestcf.one:2087#备用扫描
-www.udacity.com:443#udacity.com
+Youxuan.cf.090227.xyz:443#中国·三网优化 (Cloudflare)
+cf.090227.xyz:443#中国·CF优选
+cf.090227.xyz:2053#CM三网智能
+captaink.cf.090227.xyz:443#captaink三网智能
 cf.090227.xyz/cmcc:443#CF移动优选
 cf.090227.xyz/ct:443#CF电信优选
 cf.090227.xyz/cu:443#CF联通优选
+​cm.090227.xyz:2087#移动专属
+​cu.090227.xyz:2096#联通专属
+​ct.090227.xyz:8443#电信专属
+​visa.cn:443#visa全球高权重
+​itunes.apple.com:2053#itunes亚太边缘
+​www.gov.se:2096#欧美优选
+​www.csgo.com:8443#csgo低延迟游戏
+​bestcf.one:2087#bestcf备用扫描
+www.udacity.com:443#udacity.com
+bestcf.onecf.eu.org:443#Mingyu官方优选
+bestproxy.onecf.eu.org:443#Mingyu反代优选
+xn--b6gac.eu.org:443#官方优选↗↘↗.eu.org系列
+cdn-all.xn--b6gac.eu.org:443#官方反代优选
+
 
