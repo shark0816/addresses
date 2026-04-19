@@ -1,36 +1,38 @@
-这是一个优选域名汇总项目，支持TLS，不定期维护
-
-部署步骤（超详细）
-
-登录 Cloudflare → Workers 和 Pages → 创建 Worker
-给 Worker 起个名字，例如 vps789-daily-updater
-复制BOt内全部代码，全部替换 Worker 默认代码，然后点击 保存并部署
-添加环境变量（Secrets）
-进入 Worker → 设置 → 变量 → 添加变量（类型选 Secret）变量名值（必须填写）
-说明
-
-
-GITHUB_TOKEN（选择密钥）你的 GitHub PAT必须有 repo 权限
-GITHUB_OWNER你的 GitHub用户名例如 
-KGITHUB_REPO你的仓库名例如 cf-addressesFILE_PATHaddresses.txt
-
-你要更新的文件BRANCHmain一般是 main如何生成 GitHub PAT：
-进入 https://github.com/settings/tokens
-点击 Generate new token (classic)
-勾选 repo 权限 → 生成 → 复制保存（只显示一次）
-
-添加定时触发器
-进入 Worker → 触发器 → 添加计划触发器
-输入 Cron 表达式：0 0 * * * （每天 0 点 UTC 执行）
-测试
-部署完成后，直接在浏览器访问：
-https://你的worker名.你的子域.workers.dev/update
-如果看到 “✅ VPS789 优选IP 已更新并推送到 GitHub！” 就成功了。
-
-
-三、使用建议
-
-每天会自动在 addresses.txt 末尾新增一个带日期的区块，方便你以后手动清理旧记录。
-如果想只保留最新一组，可以在脚本里把 newSection 改为替换指定标记区（告诉我，我再给你改）。
-每次更新后，用 Clash Party 刷新订阅即可看到新 IP。
-推荐配合你之前用的 ACL4SSR_Online_Full_WithIcon.yaml 覆写，用 filter: "vps789" 创建专用组。
+你好！欢迎来到这个 Cloudflare 优选 IP 自动更新仓库。
+这个项目会通过 Cloudflare Worker 拉取 vps789.com 的优选 IP 数据，并自动更新到 addip.txt 文件中，可直接对接 WorkerVless2sub 等订阅工具使用。
+✨ 项目简介
+数据源：vps789.com 优选 IP 接口
+综合排名前 20（每日更新）
+电信 / 联通 / 移动线路优选 IP（每小时更新）
+更新频率：支持手动触发 + 定时自动更新
+使用场景：直接对接 WorkerVless2sub 等订阅转换工具，一键生成节点订阅
+📁 文件说明
+表格
+文件	说明
+addip.txt	优选 IP / 域名列表，由 Cloudflare Worker 自动更新
+README.md	本项目说明文档
+🔗 直接使用地址
+可直接用于 WorkerVless2sub 的 ADDAPI 配置：
+text
+https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
+🛠️ 工作原理
+Cloudflare Worker 拉取数据
+调用 vps789.com 优选 IP 接口，获取最新 IP / 域名
+解析并按线路分类整理数据
+自动更新到 GitHub
+通过 GitHub API 认证，自动更新 addip.txt
+支持手动触发更新，也可配置定时任务
+订阅工具读取
+WorkerVless2sub 等工具通过 ADDAPI 读取本文件
+自动生成包含所有优选 IP 的节点订阅链接
+⚙️ Cloudflare Worker 部署说明（简要）
+新建 Cloudflare Worker，部署更新脚本
+配置环境变量：
+GITHUB_TOKEN：你的 GitHub PAT（需开启 repo 权限）
+GITHUB_OWNER：你的 GitHub 用户名（shark0816）
+GITHUB_REPO：本仓库名（addresses）
+访问 /update 手动触发更新，或配置 Cron 定时任务
+⚠️ 注意事项
+addip.txt 包含部分域名地址，WorkerVless2sub 可正常解析
+数据来源为 vps789.com，IP 有效性以官方接口为准
+若更新失败，可检查 GitHub PAT 权限、仓库配置及 Worker 日志排查问题
