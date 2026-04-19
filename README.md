@@ -14,9 +14,8 @@
 | 文件 | 说明|
 | --- | --- |
 | addip.txt	| 优选 IP / 域名列表，自动更新
- |
 | README.md	| 本项目说明文档
- |
+ 
 
 🔗 原始文件地址  
 可直接用于 WorkerVless2sub 的 ADDAPI 配置：
