@@ -29,9 +29,10 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 - 支持手动触发更新，也可配置定时触发器自动执行  
 3.订阅工具读取：
 - WorkerVless2sub 等工具通过 ADDAPI 读取 addip.txt
-- 自动生成包含所有优选 IP 的节点订阅链接  
+- 自动生成包含所有优选 IP 的节点订阅链接
+  
 ⚙️ Cloudflare Worker 部署说明（简要）
-1. 新建 Cloudflare Worker，部署更新脚本
+1. 新建 Cloudflare Worker，部署本项目Bot脚本
 2. 配置环境变量：
 - GITHUB_TOKEN：你的 GitHub PAT（需开启 repo 权限）
 - GITHUB_OWNER：你的 GitHub 用户名（shark0816）
