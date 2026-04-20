@@ -26,7 +26,7 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 - 解析并提取 IP / 域名，按线路分类整理
 2. 自动更新到 GitHub：
 - 通过 GitHub API 认证，自动更新 addip.txt 文件
-- 支持手动触发更新，也可配置定时触发器自动执行  
+- 支持手动触发更新，也可配置定时触发器自动执行
 3.订阅工具读取：
 - WorkerVless2sub 等工具通过 ADDAPI 读取 addip.txt
 - 自动生成包含所有优选 IP 的节点订阅链接
