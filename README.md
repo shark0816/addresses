@@ -37,7 +37,7 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 - GITHUB_TOKEN：你的 GitHub PAT（需开启 repo 权限）
 - GITHUB_OWNER：你的 GitHub 用户名（shark0816）
 - GITHUB_REPO：本仓库名（addresses）
-3. 访问 /update 手动触发更新，或配置 Cron 定时任务  
+3. 访问 /update 手动触发更新，或配置 Cron 定时任务
 ⚠️ 注意事项
 - addip.txt 包含部分域名地址，WorkerVless2sub 可正常解析
 - 数据来源为 vps789.com，IP 有效性以官方接口为准
