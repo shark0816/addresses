@@ -4,88 +4,78 @@ export default {
     if (url.pathname === "/update") {
       return await updateIPs(env);
     }
-    return new Response("服务运行中\n访问 /update 手动更新", { status: 200 });
+    return new Response("服务运行中，访问 /update 更新", { status: 200 });
   },
 
   async scheduled(event, env, ctx) {
-    console.log("⏰ 定时任务触发：开始自动更新 IP");
     ctx.waitUntil(updateIPs(env));
   }
 };
 
 async function updateIPs(env) {
   try {
-    console.log("🚀 开始更新 IP 列表...");
-
     const baseHeaders = {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       "Accept": "application/json, text/plain, */*"
     };
 
-    // --------------------------
-    // 1. 拉取 vps789 数据
-    // --------------------------
+    // 1. 拉取 vps789 IP
     const topRes = await fetch("https://vps789.com/openApi/cfIpTop20", { headers: baseHeaders });
     const dynRes = await fetch("https://vps789.com/openApi/cfIpApi", { headers: baseHeaders });
-
     const topData = await topRes.json();
     const dynData = await dynRes.json();
 
     const goodIPs = topData?.data?.good || [];
-    const ct = dynData?.data?.CT || [];
-    const cu = dynData?.data?.CU || [];
-    const cm = dynData?.data?.CM || [];
+    const ctIPs = dynData?.data?.CT || [];
+    const cuIPs = dynData?.data?.CU || [];
+    const cmIPs = dynData?.data?.CM || [];
 
-    // --------------------------
-    // 2. 拉取 uouin.com 优选IP
-    // --------------------------
-    console.log("🔍 正在拉取 uouin.com 优选IP...");
+    // 2. 拉取 uouin IP
     const uouinRes = await fetch("https://api.uouin.com/cloudflare.html", { headers: baseHeaders });
     const uouinText = await uouinRes.text();
-    // 简单IP正则提取（匹配IPV4格式）
     const uouinIPs = uouinText.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
-    // 去重 + 取前10个
     const uniqueUouinIPs = [...new Set(uouinIPs)].slice(0, 10);
-    console.log(`✅ 成功拉取 uouin.com IP: ${uniqueUouinIPs.length} 个`);
 
-    // --------------------------
-    // 3. 北京时区时间格式化
-    // --------------------------
-    const beijingTime = new Date().toLocaleString("zh-CN", {
-      timeZone: "Asia/Shanghai",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
+    // 3. 按你要求的格式生成内容，完全纯净
+    let content = "";
+    let idx;
+
+    // 综合优选
+    idx = 1;
+    goodIPs.slice(0, 10).forEach(i => {
+      content += `${i.ip}#综合优选ip（vps789）${idx}\n`;
+      idx++;
     });
 
-    // --------------------------
-    // 4. 生成 addip.txt 内容
-    // --------------------------
-    let content = "# Cloudflare 优选IP列表\n";
-    content += `# 更新时间（北京）：${beijingTime}\n`;
-    content += "# 数据来源：vps789.com + api.uouin.com\n\n";
+    // 电信
+    idx = 1;
+    ctIPs.slice(0, 10).forEach(i => {
+      content += `${i.ip}#电信ct（vps789）${idx}\n`;
+      idx++;
+    });
 
-    content += "=== 综合优选 IP（vps789） ===\n";
-    goodIPs.slice(0, 10).forEach(i => content += i.ip + "\n");
+    // 联通
+    idx = 1;
+    cuIPs.slice(0, 10).forEach(i => {
+      content += `${i.ip}#联通cu（vps789）${idx}\n`;
+      idx++;
+    });
 
-    content += "\n=== 电信 CT（vps789） ===\n";
-    ct.slice(0, 10).forEach(i => content += i.ip + "\n");
+    // 移动
+    idx = 1;
+    cmIPs.slice(0, 10).forEach(i => {
+      content += `${i.ip}#移动cm（vps789）${idx}\n`;
+      idx++;
+    });
 
-    content += "\n=== 联通 CU（vps789） ===\n";
-    cu.slice(0, 10).forEach(i => content += i.ip + "\n");
+    // uouin优选
+    idx = 1;
+    uniqueUouinIPs.forEach(ip => {
+      content += `${ip}#优选ip（api.uouin.com）${idx}\n`;
+      idx++;
+    });
 
-    content += "\n=== 移动 CM（vps789） ===\n";
-    cm.slice(0, 10).forEach(i => content += i.ip + "\n");
-
-    content += "\n=== 优选 IP（api.uouin.com） ===\n";
-    uniqueUouinIPs.forEach(ip => content += ip + "\n");
-
-    // --------------------------
-    // 5. 推送到 GitHub
-    // --------------------------
+    // 4. 强制更新到 GitHub
     const token = env.GITHUB_TOKEN;
     const owner = env.GITHUB_OWNER;
     const repo = env.GITHUB_REPO;
@@ -93,28 +83,38 @@ async function updateIPs(env) {
     const branch = "main";
 
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-    const githubHeaders = { ...baseHeaders, Authorization: `token ${token}` };
+    const githubHeaders = {
+      ...baseHeaders,
+      "Authorization": `token ${token}`,
+      "Accept": "application/vnd.github.v3+json"
+    };
 
+    // 获取文件sha
     const fileResp = await fetch(`${apiUrl}?ref=${branch}`, { headers: githubHeaders });
     const fileInfo = await fileResp.json();
     const sha = fileInfo.sha;
 
+    // 编码内容
+    const encoder = new TextEncoder();
+    const uint8Array = encoder.encode(content);
+    const base64Content = btoa(String.fromCharCode(...uint8Array));
+
+    // 上传覆盖
     await fetch(apiUrl, {
       method: "PUT",
-      headers: { ...githubHeaders, "Content-Type": "application/json" },
+      headers: githubHeaders,
       body: JSON.stringify({
-        message: `自动更新 ${beijingTime}`,
-        content: btoa(unescape(encodeURIComponent(content))),
+        message: "update addip.txt",
+        content: base64Content,
         sha: sha,
         branch: branch
       })
     });
 
-    console.log(`✅ 更新成功！北京时区时间：${beijingTime}`);
-    return new Response(`✅ 更新成功！\n时间：${beijingTime}`, { status: 200 });
+    return new Response("✅ 更新完成，格式已按要求生成", { status: 200 });
 
   } catch (err) {
-    console.error("❌ 更新失败：", err.message);
-    return new Response(`❌ 错误：${err.message}`, { status: 500 });
+    console.error(err);
+    return new Response(`❌ 更新失败：${err.message}`, { status: 500 });
   }
 }
