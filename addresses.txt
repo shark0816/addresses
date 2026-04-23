@@ -65,9 +65,6 @@ xn--b6gac.eu.org:443#xn--b6gac.eu.org
 8.889288.xyz:443#8.889288.xyz
 cf.030101.xyz:443#全球·全能优选 (Cloudflare)
 cf.877774.xyz:443#中国·优化线路 (秋名山)
-cloudflare.seeck.cn:443#中国·三网通用
-cmcc.cloudflare.seeck.cn:443#中国移动·定向优化
-cucc.cloudflare.seeck.cn:443#中国联通·定向优化
 cloudflare.19931110.xyz:443#全球·Cloudflare解析
 cf.cnae.top:443#全球·Cloudflare自用
 edgeone.19931110.xyz:443#中国/香港·腾讯云EdgeOne
