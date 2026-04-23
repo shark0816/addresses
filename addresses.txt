@@ -10,10 +10,6 @@ saas.sin.fan:443#中国·SaaS优选
 time.is:443#优选time.is
 icook.hk:443#优选icook.hk
 dogechain.info:443#电信1
-104.16.160.1:443#联通-SJC推荐
-104.23.240.1:443#联通-移动友好
-108.162.236.1:443#联通-美国走线
-104.20.157.1:443#联通-日本走线
 store.ubi.com:443#store.ubi.com
 malaysia.com:443#malaysia.com
 singapore.com:443#singapore.com
