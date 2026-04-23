@@ -1,3 +1,4 @@
+captaink.cf.090227.xyz:443#captaink三网智能
 jiasu.sharkshark.dpdns.org#我的SenflareSaaS加速
 ctcc.cloudflare.seeck.cn#SenflareSaaS电信
 cmcc.cloudflare.seeck.cn#SenflareSaaS移动
@@ -87,7 +88,6 @@ staticdelivery.nexusmods.com:443#美国/欧洲·NexusMods
 Youxuan.cf.090227.xyz:443#中国·三网优化 (Cloudflare)
 cf.090227.xyz:443#中国·CF优选
 cf.090227.xyz:2053#CM三网智能
-captaink.cf.090227.xyz:443#captaink三网智能
 cf.090227.xyz/cmcc:443#CF移动优选
 cf.090227.xyz/ct:443#CF电信优选
 cf.090227.xyz/cu:443#CF联通优选
