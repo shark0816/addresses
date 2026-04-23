@@ -1,3 +1,7 @@
+jiasu.sharkshark.dpdns.org#我的SenflareSaaS加速
+ctcc.cloudflare.seeck.cn#SenflareSaaS电信
+cmcc.cloudflare.seeck.cn#SenflareSaaS移动
+cucc.cloudflare.seeck.cn#SenflareSaaS联通
 ct.cloudflare.lingyucat.com:443#电信V4
 cm.cloudflare.lingyucat.com:443#移动V4
 cu.cloudflare.lingyucat.com:443#联通V4
