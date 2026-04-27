@@ -1,5 +1,4 @@
 captaink.cf.090227.xyz:443#captaink三网智能
-jiasu.sharkshark.dpdns.org#我的SenflareSaaS加速
 ctcc.cloudflare.seeck.cn#SenflareSaaS电信
 cmcc.cloudflare.seeck.cn#SenflareSaaS移动
 cucc.cloudflare.seeck.cn#SenflareSaaS联通
