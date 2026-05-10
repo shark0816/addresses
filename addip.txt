@@ -1,9 +1,9 @@
-# Cloudflare 优选 IP + 域名 自动更新
-# 更新时间: 2026/5/10 09:29:47
+# Cloudflare 优选 IP 自动更新
+# 更新时间: 2026/5/10 09:34:18
 
-## 🌟 vps789 推荐优选域名
-bestcf.top#vps789推荐优选域名（三网较稳）
-cfip.bestcf.top#vps789优选子域名
+## vps789 优选域名
+bestcf.top#vps789优选域名
+cfip.bestcf.top#vps789优选域名
 
 ## vps789 综合优选 IP
 
