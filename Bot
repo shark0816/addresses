@@ -2,119 +2,167 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/update") {
-      return await updateIPs(env);
+      return await updateAndCommit(env);
     }
     return new Response("服务运行中，访问 /update 更新", { status: 200 });
   },
 
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(updateIPs(env));
+    ctx.waitUntil(updateAndCommit(env));
   }
 };
 
-async function updateIPs(env) {
+// ==================== 核心更新函数 ====================
+async function updateAndCommit(env) {
+  console.log("🚀 开始执行 IP 更新任务...");
+
+  const GITHUB_TOKEN = env.GITHUB_TOKEN;
+  const GITHUB_OWNER = env.GITHUB_OWNER;
+  const GITHUB_REPO = env.GITHUB_REPO;
+
+  if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO) {
+    console.error("❌ 环境变量未正确设置");
+    return new Response("❌ 环境变量未设置", { status: 500 });
+  }
+
   try {
-    const baseHeaders = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      "Accept": "application/json, text/plain, */*"
-    };
+    const newContent = await updateIPs();
 
-    // 1. 拉取 vps789 IP
-    const topRes = await fetch("https://vps789.com/openApi/cfIpTop20", { headers: baseHeaders });
-    const dynRes = await fetch("https://vps789.com/openApi/cfIpApi", { headers: baseHeaders });
-    const topData = await topRes.json();
-    const dynData = await dynRes.json();
+    const filePath = "addip.txt";
+    let sha = null;
 
-    const goodIPs = topData?.data?.good || [];
-    const ctIPs = dynData?.data?.CT || [];
-    const cuIPs = dynData?.data?.CU || [];
-    const cmIPs = dynData?.data?.CM || [];
-
-    // 2. 拉取 uouin IP
-    const uouinRes = await fetch("https://api.uouin.com/cloudflare.html", { headers: baseHeaders });
-    const uouinText = await uouinRes.text();
-    const uouinIPs = uouinText.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
-    const uniqueUouinIPs = [...new Set(uouinIPs)].slice(0, 10);
-
-    // 3. 按你要求的格式生成内容，完全纯净
-    let content = "";
-    let idx;
-
-    // 综合优选
-    idx = 1;
-    goodIPs.slice(0, 10).forEach(i => {
-      content += `${i.ip}#综合优选ip（vps789）${idx}\n`;
-      idx++;
-    });
-
-    // 电信
-    idx = 1;
-    ctIPs.slice(0, 10).forEach(i => {
-      content += `${i.ip}#电信ct（vps789）${idx}\n`;
-      idx++;
-    });
-
-    // 联通
-    idx = 1;
-    cuIPs.slice(0, 10).forEach(i => {
-      content += `${i.ip}#联通cu（vps789）${idx}\n`;
-      idx++;
-    });
-
-    // 移动
-    idx = 1;
-    cmIPs.slice(0, 10).forEach(i => {
-      content += `${i.ip}#移动cm（vps789）${idx}\n`;
-      idx++;
-    });
-
-    // uouin优选
-    idx = 1;
-    uniqueUouinIPs.forEach(ip => {
-      content += `${ip}#优选ip（api.uouin.com）${idx}\n`;
-      idx++;
-    });
-
-    // 4. 强制更新到 GitHub
-    const token = env.GITHUB_TOKEN;
-    const owner = env.GITHUB_OWNER;
-    const repo = env.GITHUB_REPO;
-    const path = "addip.txt";
-    const branch = "main";
-
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
     const githubHeaders = {
-      ...baseHeaders,
-      "Authorization": `token ${token}`,
+      "Authorization": `token ${GITHUB_TOKEN}`,
+      "User-Agent": "Cloudflare-Worker-IP-Updater",
       "Accept": "application/vnd.github.v3+json"
     };
 
-    // 获取文件sha
-    const fileResp = await fetch(`${apiUrl}?ref=${branch}`, { headers: githubHeaders });
-    const fileInfo = await fileResp.json();
-    const sha = fileInfo.sha;
-
-    // 编码内容
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode(content);
-    const base64Content = btoa(String.fromCharCode(...uint8Array));
-
-    // 上传覆盖
-    await fetch(apiUrl, {
-      method: "PUT",
-      headers: githubHeaders,
-      body: JSON.stringify({
-        message: "update addip.txt",
-        content: base64Content,
-        sha: sha,
-        branch: branch
-      })
+    // 获取当前 SHA
+    const getRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
+      headers: githubHeaders
     });
 
-    return new Response("✅ 更新完成，格式已按要求生成", { status: 200 });
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
+    } else if (getRes.status !== 404) {
+      console.error("获取 SHA 失败:", getRes.status);
+    }
 
+    // 标准编码
+    const encoder = new TextEncoder();
+    const uint8Array = encoder.encode(newContent);
+    const base64Content = btoa(String.fromCharCode(...uint8Array));
+
+    const body = {
+      message: `Auto update IP list - ${new Date().toISOString()}`,
+      content: base64Content,
+      sha: sha
+    };
+
+    const putRes = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`, {
+      method: "PUT",
+      headers: githubHeaders,
+      body: JSON.stringify(body)
+    });
+
+    if (putRes.ok) {
+      console.log("✅ GitHub 更新成功！");
+      return new Response("✅ 更新成功！addip.txt 已更新", { status: 200 });
+    } else {
+      const errText = await putRes.text();
+      console.error("❌ GitHub 更新失败:", putRes.status, errText);
+      return new Response("❌ GitHub 更新失败", { status: 500 });
+    }
   } catch (err) {
-    console.error(err);
-    return new Response(`❌ 更新失败：${err.message}`, { status: 500 });
+    console.error("❌ 更新异常:", err.message);
+    return new Response(`❌ 更新失败: ${err.message}`, { status: 500 });
   }
+}
+
+// ==================== IP 拉取函数（整合双来源 + 你要的格式） ====================
+async function updateIPs() {
+  const baseHeaders = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  };
+
+  let content = "";
+  let idx;
+
+  // ==============================================
+  // 1. 拉取 vps789 完整数据：综合、电信、联通、移动
+  // ==============================================
+  let goodIPs = [], ctIPs = [], cuIPs = [], cmIPs = [];
+  try {
+    const topRes = await fetch("https://vps789.com/openApi/cfIpTop20", { headers: baseHeaders });
+    const topData = await topRes.json();
+    goodIPs = topData?.data?.good || [];
+  } catch (e) { console.warn("vps789 top 接口异常", e.message); }
+
+  try {
+    const dynRes = await fetch("https://vps789.com/openApi/cfIpApi", { headers: baseHeaders });
+    const dynData = await dynRes.json();
+    ctIPs = dynData?.data?.CT || [];
+    cuIPs = dynData?.data?.CU || [];
+    cmIPs = dynData?.data?.CM || [];
+  } catch (e) { console.warn("vps789 运营商接口异常", e.message); }
+
+  // ==============================================
+  // 2. 拉取 uouin IP（你提供的可用版本）
+  // ==============================================
+  let uouinIPs = [];
+  try {
+    const uouinRes = await fetch("https://api.uouin.com/cloudflare.html", {
+      headers: baseHeaders,
+      redirect: "follow"
+    });
+    if (uouinRes.ok) {
+      const text = await uouinRes.text();
+      const ips = text.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
+      uouinIPs = [...new Set(ips)].slice(0, 10);
+      console.log(`✅ uouin 成功提取 ${uouinIPs.length} 个 IP`);
+    }
+  } catch (err) {
+    console.error("❌ uouin 拉取异常:", err.message);
+  }
+
+  // ==============================================
+  // 3. 按你要求输出：纯 ip#备注 无空行 无标题 小写
+  // ==============================================
+  // 综合优选
+  idx = 1;
+  goodIPs.slice(0, 10).forEach(i => {
+    content += `${i.ip}#综合优选ip（vps789）${idx}\n`;
+    idx++;
+  });
+
+  // 电信ct
+  idx = 1;
+  ctIPs.slice(0, 10).forEach(i => {
+    content += `${i.ip}#电信ct（vps789）${idx}\n`;
+    idx++;
+  });
+
+  // 联通cu
+  idx = 1;
+  cuIPs.slice(0, 10).forEach(i => {
+    content += `${i.ip}#联通cu（vps789）${idx}\n`;
+    idx++;
+  });
+
+  // 移动cm
+  idx = 1;
+  cmIPs.slice(0, 10).forEach(i => {
+    content += `${i.ip}#移动cm（vps789）${idx}\n`;
+    idx++;
+  });
+
+  // uouin优选
+  idx = 1;
+  uouinIPs.forEach(ip => {
+    content += `${ip}#优选ip（api.uouin.com）${idx}\n`;
+    idx++;
+  });
+
+  return content;
 }
