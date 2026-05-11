@@ -48,7 +48,6 @@ freeyx.cloudflare88.eu.org:443#freeyx.cloudflare88.eu.org
 nrt.xxxxxxxx.nyc.mn:443#nrt.xxxxxxxx.nyc.mn
 sub.danfeng.eu.org:443#sub.danfeng.eu.org
 xn--b6gac.eu.org:443#xn--b6gac.eu.org
-115155.xyz:443#115155.xyz
 cf.030101.xyz:443#全球·全能优选 (Cloudflare)
 cf.877774.xyz:443#中国·优化线路 (秋名山)
 cloudflare.19931110.xyz:443#全球·Cloudflare解析
