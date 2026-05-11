@@ -36,21 +36,16 @@ cf.0sm.com:443#cf.0sm.com
 cf.008500.xyz:443#cf.008500.xyz
 cf.130519.xyz:443#cf.130519.xyz
 cf.877771.xyz:443#cf.877771.xyz
-cf.900501.xyz:443#cf.900501.xyz
 cfip.1323123.xyz:443#cfip.1323123.xyz
-cfip.cfcdn.vip:443#cfip.cfcdn.vip
 cfip.xxxxxxxx.tk:443#cfip.xxxxxxxx.tk
 cf.zhetengsha.eu.org:443#cf.zhetengsha.eu.org
 cloudflare-dl.byoip.top:443#cloudflare-dl.byoip.top
 cloudflare-ip.mofashi.ltd:443#cloudflare-ip.mofashi.ltd
 cloudflare.182682.xyz:443#cloudflare.182682.xyz
-cname.xirancdn.us:443#cname.xirancdn.us
-cnamefuckxxs.yuchen.icu:443#cnamefuckxxs.yuchen.icu
 drmartens.co.kr:443#drmartens.co.kr
 fn.130519.xyz:443#fn.130519.xyz
 freeyx.cloudflare88.eu.org:443#freeyx.cloudflare88.eu.org
 nrt.xxxxxxxx.nyc.mn:443#nrt.xxxxxxxx.nyc.mn
-nrtcfdns.zone.id:443#nrtcfdns.zone.id
 sub.danfeng.eu.org:443#sub.danfeng.eu.org
 xn--b6gac.eu.org:443#xn--b6gac.eu.org
 115155.xyz:443#115155.xyz
@@ -60,7 +55,6 @@ cloudflare.19931110.xyz:443#全球·Cloudflare解析
 cf.cnae.top:443#全球·Cloudflare自用
 cloudflare-ech.com:443#美国·CF基础设施(ECH)
 bestcf.top:443#中国·CF顶配
-cdn.tzpro.xyz:443#中国·TZPRO
 cf.tencentapp.cn:443#中国·腾讯云
 bestcf.030101.xyz:443#中国·最优CFMingYu维护
 cdn.2020111.xyz:443#中国·CDN
@@ -93,7 +87,5 @@ cf.090227.xyz/cu:443#CF联通优选
 ​www.csgo.com:8443#csgo低延迟游戏
 ​bestcf.one:2087#bestcf备用扫描
 www.udacity.com:443#udacity.com
-bestcf.onecf.eu.org:443#Mingyu官方优选
 bestproxy.onecf.eu.org:443#Mingyu反代优选
 xn--b6gac.eu.org:443#官方优选↗↘↗.eu.org系列
-cdn-all.xn--b6gac.eu.org:443#官方反代优选
