@@ -1,0 +1,169 @@
+# Mihomo (Clash Meta) 覆写配置 - 增强版
+# 适用：Mihomo Party 覆写 或 WorkerVless2sub SUBCONFIG
+
+proxy-groups:
+  # 核心切换
+  - name: 🚀 节点选择
+    type: select
+    proxies: [♻️ 自动选择, ⚖️ 负载均衡, 🏁 台湾节点, 🏁 香港节点, 🏁 日本节点, 🏁 美国节点, DIRECT]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
+
+  - name: ♻️ 自动选择
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies: [] # 留空会自动继承订阅中的节点
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/auto.png
+
+  - name: ⚖️ 负载均衡
+    type: load-balance
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    strategy: consistent-hashing
+    proxies: []
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/balance.png
+
+  # 区域分组 (自动筛选)
+  - name: 🏁 香港节点
+    type: select
+    include-all: true
+    filter: "(?i)香港|HK|Hong Kong|HONGKONG"
+    proxies: [🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/hongkong.png
+
+  - name: 🏁 台湾节点
+    type: select
+    include-all: true
+    filter: "(?i)台湾|TW|Taiwan|TAIWAN"
+    proxies: [🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/taiwan.png
+
+  - name: 🏁 日本节点
+    type: select
+    include-all: true
+    filter: "(?i)日本|JP|Japan|JAPAN"
+    proxies: [🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/japan.png
+
+  - name: 🏁 美国节点
+    type: select
+    include-all: true
+    filter: "(?i)美国|US|USA|United States"
+    proxies: [🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/usa.png
+
+  # 细分分流策略
+  - name: 🤖 人工智能
+    type: select
+    proxies: [🚀 节点选择, 🏁 美国节点, 🏁 日本节点, 🏁 台湾节点]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/openai.png
+
+  - name: 🎬 奈飞视频
+    type: select
+    proxies: [🚀 节点选择, 🏁 香港节点, 🏁 台湾节点, 🏁 美国节点]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/netflix.png
+
+  - name: 📺 哔哩哔哩
+    type: select
+    proxies: [DIRECT, 🏁 台湾节点, 🏁 香港节点]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/bilibili.png
+
+  - name: 📽️ 国内媒体
+    type: select
+    proxies: [DIRECT, 🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/chinatv.png
+
+  - name: 📢 谷歌服务
+    type: select
+    proxies: [🚀 节点选择, ♻️ 自动选择, DIRECT]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/google.png
+
+  - name: ☁️ 谷歌FCM
+    type: select
+    proxies: [🚀 节点选择, ♻️ 自动选择, DIRECT]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/fcm.png
+
+  - name: Ⓜ️ 微软服务
+    type: select
+    proxies: [DIRECT, 🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/microsoft.png
+
+  - name: 📧 微软云盘
+    type: select
+    proxies: [DIRECT, 🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/onedrive.png
+
+  - name: 🍎 苹果服务
+    type: select
+    proxies: [DIRECT, 🚀 节点选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/apple.png
+
+  - name: 📲 电报消息
+    type: select
+    proxies: [🚀 节点选择, ♻️ 自动选择]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/telegram.png
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies: [🚀 节点选择, DIRECT]
+    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
+
+# 使用 Rule Providers 引用 ACL4SSR 核心规则
+rule-providers:
+  openai:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OpenAI.yaml"
+    path: ./ruleset/openai.yaml
+    interval: 86400
+
+  bilibili:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Bilibili.yaml"
+    path: ./ruleset/bilibili.yaml
+    interval: 86400
+
+  domestic_media:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/ChinaMedia.yaml"
+    path: ./ruleset/china_media.yaml
+    interval: 86400
+
+  microsoft:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Microsoft.yaml"
+    path: ./ruleset/microsoft.yaml
+    interval: 86400
+
+  onedrive:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OneDrive.yaml"
+    path: ./ruleset/onedrive.yaml
+    interval: 86400
+
+  google_fcm:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/GoogleFCM.yaml"
+    path: ./ruleset/fcm.yaml
+    interval: 86400
+
+rules:
+  - RULE-SET,openai,🤖 人工智能
+  - RULE-SET,bilibili,📺 哔哩哔哩
+  - RULE-SET,domestic_media,📽️ 国内媒体
+  - RULE-SET,microsoft,Ⓜ️ 微软服务
+  - RULE-SET,onedrive,📧 微软云盘
+  - RULE-SET,google_fcm,☁️ 谷歌FCM
+  # 基础分流
+  - RULE-SET,google,📢 谷歌服务
+  - RULE-SET,telegram,📲 电报消息
+  - RULE-SET,netflix,🎬 奈飞视频
+  - RULE-SET,apple,🍎 苹果服务
+  - GEOIP,CN,DIRECT
+  - MATCH,🐟 漏网之鱼
