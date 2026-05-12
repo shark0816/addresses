@@ -24,10 +24,11 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 
 🛠️ 工作原理
 1. CF Worker 抓取数据
-定时请求 vps789、uouin 接口，自动抓取、去重、整理优质 IP
-2. 自动写入 GitHub
+Bot脚本定时请求 vps789、uouin 接口，自动抓取、去重、整理优质 IP
+Bot1脚本定时请求 vps789、uouin Mia 天诚 Gslege IRCF接口，自动抓取、去重、整理优质 IP
+3. 自动写入 GitHub
 通过 GitHub API 授权，自动更新 addip.txt，支持手动触发 + 定时任务
-3. 订阅工具读取
+4. 订阅工具读取
 WorkerVless2sub 通过 ADDAPI 读取本文件，自动生成多 IP 节点订阅  
 
 ⚙️ 完整详细部署教程（新手一步一步跟着做）
