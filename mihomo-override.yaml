@@ -1,159 +1,255 @@
-# Mihomo (Clash Meta) 修复版配置
-# 修复了 Loop Detected 循环引用问题
+# ==============================================
+# CM WorkerVless2sub SUBCONFIG 最终配置
+# 等效 ACL4SSR_Full + YaNet 脚本核心功能
+# 带国家分组、图标、自动测速、倍率过滤
+# ==============================================
+enable: true
+log-level: silent
+ipv6: true
+allow-lan: true
+unified-delay: true
+tcp-concurrent: true
+global-client-fingerprint: chrome
+find-process-mode: strict
 
+# ---------- DNS 优化（防污染+最快解析） ----------
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  nameserver-policy:
+    "geosite:private,cn,steam@cn,microsoft@cn,apple@cn":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+    "geosite:gfw,openai,anthropic,google,youtube,netflix,telegram":
+      - https://dns.google/dns-query
+      - https://dns.adguard.com/dns-query
+  fake-ip:
+    enable: true
+    range: 198.18.0.0/15
+    exclude:
+      - geosite:cn
+      - geosite:private
+
+# ---------- 核心策略组（带图标+自动分组+倍率过滤） ----------
 proxy-groups:
-  # 1. 核心汇总组（作为分流的总开关）
-  - name: 🚀 节点选择
-    type: select
-    proxies: [♻️ 自动选择, ⚖️ 负载均衡, 🏁 香港节点, 🏁 台湾节点, 🏁 日本节点, 🏁 美国节点, DIRECT]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
-
-  - name: ♻️ 自动选择
+  # 1. 地区自动测速组（每个地区单独测速，自动选最快）
+  - name: 🇭🇰 香港节点
     type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    include-all: true # 包含所有节点进行测速
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/auto.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    filter: "(?=.*(港|🇭🇰|hk|hongkong|hong kong))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
 
-  - name: ⚖️ 负载均衡
-    type: load-balance
+  - name: 🇺🇸 美国节点
+    type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
-    strategy: consistent-hashing
-    include-all: true # 包含所有节点进行均衡
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/balance.png
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+    filter: "(?!.*aus)(?=.*(美|🇺🇸|us(?!t)|usa|american|united states))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
 
-  # 2. 区域分流组（注意：这里不再包含“🚀 节点选择”，避免循环）
-  - name: 🏁 香港节点
+  - name: 🇯🇵 日本节点
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    filter: "(?=.*(日本|🇯🇵|jp|japan))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
+
+  - name: 🇸🇬 新加坡节点
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+    filter: "(?=.*(新加坡|🇸🇬|sg|singapore))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
+
+  - name: 🇹🇼 台湾节点
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png
+    filter: "(?=.*(台湾|台灣|🇹🇼|tw|taiwan))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
+
+  - name: 🇬🇧 英国节点
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_Kingdom.png
+    filter: "(?=.*(英|🇬🇧|uk|united kingdom))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
+
+  - name: 🇩🇪 德国节点
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Germany.png
+    filter: "(?=.*(德国|🇩🇪|de|germany))(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
+
+  - name: 🌍 其他节点
     type: select
-    include-all: true
-    filter: "(?i)香港|HK|Hong Kong|HONGKONG"
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/hongkong.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/World_Map.png
+    filter: "!(港|🇭🇰|hk|美|🇺🇸|us|日本|🇯🇵|jp|新加坡|🇸🇬|sg|台湾|🇹🇼|tw|英|🇬🇧|uk|德国|🇩🇪|de)(?!.*([2-9]|1\\.[6-9])[xX✕✖⨉倍率])"
 
-  - name: 🏁 台湾节点
+  # 2. 全局自动选择（从所有地区最快节点中再选最快）
+  - name: 🚀 全局自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    proxies:
+      - 🇭🇰 香港节点
+      - 🇺🇸 美国节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🇹🇼 台湾节点
+      - 🇬🇧 英国节点
+      - 🇩🇪 德国节点
+      - 🌍 其他节点
+
+  # 3. 服务独立策略组（可手动切换任意地区）
+  - name: 🤖 AI服务
     type: select
-    include-all: true
-    filter: "(?i)台湾|TW|Taiwan|TAIWAN"
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/taiwan.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+    proxies:
+      - 🚀 全局自动
+      - 🇺🇸 美国节点
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🇹🇼 台湾节点
+      - 🇬🇧 英国节点
+      - 🇩🇪 德国节点
+      - 🌍 其他节点
+      - DIRECT
 
-  - name: 🏁 日本节点
+  - name: 📺 流媒体
     type: select
-    include-all: true
-    filter: "(?i)日本|JP|Japan|JAPAN"
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/japan.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Streaming!CN.png
+    proxies:
+      - 🚀 全局自动
+      - 🇭🇰 香港节点
+      - 🇺🇸 美国节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🇹🇼 台湾节点
+      - 🌍 其他节点
+      - DIRECT
 
-  - name: 🏁 美国节点
+  - name: 💬 社交媒体
     type: select
-    include-all: true
-    filter: "(?i)美国|US|USA|United States"
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/usa.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    proxies:
+      - 🚀 全局自动
+      - 🇭🇰 香港节点
+      - 🇺🇸 美国节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🌍 其他节点
+      - DIRECT
 
-  # 3. 业务应用组（引用“🚀 节点选择”或特定区域组）
-  - name: 🤖 人工智能
+  - name: 🔍 谷歌服务
     type: select
-    proxies: [🚀 节点选择, 🏁 美国节点, 🏁 日本节点, 🏁 台湾节点]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/openai.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    proxies:
+      - 🚀 全局自动
+      - 🇭🇰 香港节点
+      - 🇺🇸 美国节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🌍 其他节点
+      - DIRECT
 
-  - name: 🎬 奈飞视频
+  - name: 🎮 游戏加速
     type: select
-    proxies: [🚀 节点选择, 🏁 香港节点, 🏁 台湾节点, 🏁 美国节点]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/netflix.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
+    proxies:
+      - 🚀 全局自动
+      - 🇭🇰 香港节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🇺🇸 美国节点
+      - 🌍 其他节点
+      - DIRECT
 
-  - name: 📺 哔哩哔哩
+  - name: 🌐 国外网站
     type: select
-    proxies: [DIRECT, 🏁 台湾节点, 🏁 香港节点, 🚀 节点选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/bilibili.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Globe.png
+    proxies:
+      - 🚀 全局自动
+      - 🇭🇰 香港节点
+      - 🇺🇸 美国节点
+      - 🇯🇵 日本节点
+      - 🇸🇬 新加坡节点
+      - 🇹🇼 台湾节点
+      - 🇬🇧 英国节点
+      - 🇩🇪 德国节点
+      - 🌍 其他节点
+      - DIRECT
 
-  - name: 📽️ 国内媒体
+  - name: 🇨🇳 国内直连
     type: select
-    proxies: [DIRECT, 🚀 节点选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/chinatv.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China_Map.png
+    proxies:
+      - DIRECT
+      - 🚀 全局自动
 
-  - name: 📢 谷歌服务
+  - name: 🚫 广告拦截
     type: select
-    proxies: [🚀 节点选择, ♻️ 自动选择, DIRECT]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/google.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+    proxies:
+      - REJECT
+      - DIRECT
 
-  - name: ☁️ 谷歌FCM
-    type: select
-    proxies: [🚀 节点选择, ♻️ 自动选择, DIRECT]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/fcm.png
-
-  - name: Ⓜ️ 微软服务
-    type: select
-    proxies: [DIRECT, 🚀 节点选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/microsoft.png
-
-  - name: 📧 微软云盘
-    type: select
-    proxies: [DIRECT, 🚀 节点选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/onedrive.png
-
-  - name: 🍎 苹果服务
-    type: select
-    proxies: [DIRECT, 🚀 节点选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/apple.png
-
-  - name: 📲 电报消息
-    type: select
-    proxies: [🚀 节点选择, ♻️ 自动选择]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/telegram.png
-
-  - name: 🐟 漏网之鱼
-    type: select
-    proxies: [🚀 节点选择, DIRECT]
-    icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
-
-# 规则部分保持不变
-rule-providers:
-  openai:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OpenAI.yaml"
-    path: ./ruleset/openai.yaml
-    interval: 86400
-  bilibili:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Bilibili.yaml"
-    path: ./ruleset/bilibili.yaml
-    interval: 86400
-  domestic_media:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/ChinaMedia.yaml"
-    path: ./ruleset/china_media.yaml
-    interval: 86400
-  microsoft:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Microsoft.yaml"
-    path: ./ruleset/microsoft.yaml
-    interval: 86400
-  onedrive:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OneDrive.yaml"
-    path: ./ruleset/onedrive.yaml
-    interval: 86400
-  google_fcm:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/GoogleFCM.yaml"
-    path: ./ruleset/fcm.yaml
-    interval: 86400
-
+# ---------- 完整分流规则（和 ACL4SSR 一致） ----------
 rules:
-  - RULE-SET,openai,🤖 人工智能
-  - RULE-SET,bilibili,📺 哔哩哔哩
-  - RULE-SET,domestic_media,📽️ 国内媒体
-  - RULE-SET,microsoft,Ⓜ️ 微软服务
-  - RULE-SET,onedrive,📧 微软云盘
-  - RULE-SET,google_fcm,☁️ 谷歌FCM
-  - RULE-SET,google,📢 谷歌服务
-  - RULE-SET,telegram,📲 电报消息
-  - RULE-SET,netflix,🎬 奈飞视频
-  - RULE-SET,apple,🍎 苹果服务
-  - GEOIP,CN,DIRECT
-  - MATCH,🐟 漏网之鱼
+  # 进程级直连（远程工具/内网穿透不走代理）
+  - PROCESS-NAME-REGEX,(?i).*Oray.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*Sunlogin.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*ToDesk.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*RustDesk.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*TeamViewer.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*AnyDesk.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*frpc.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*frps.*,🇨🇳 国内直连
+  - PROCESS-NAME-REGEX,(?i).*cloudflared.*,🇨🇳 国内直连
+
+  # 基础直连
+  - GEOSITE,private,🇨🇳 国内直连
+  - GEOIP,private,🇨🇳 国内直连,no-resolve
+  - GEOSITE,cn,🇨🇳 国内直连
+  - GEOIP,cn,🇨🇳 国内直连,no-resolve
+
+  # 广告拦截
+  - GEOSITE,category-ads-all,🚫 广告拦截
+
+  # 服务分流
+  - GEOSITE,openai,🤖 AI服务
+  - GEOSITE,anthropic,🤖 AI服务
+  - GEOSITE,jetbrains-ai,🤖 AI服务
+  - GEOSITE,google,🔍 谷歌服务
+  - GEOSITE,youtube,📺 流媒体
+  - GEOSITE,netflix,📺 流媒体
+  - GEOSITE,disney,📺 流媒体
+  - GEOSITE,spotify,📺 流媒体
+  - GEOSITE,pixiv,📺 流媒体
+  - GEOSITE,hbo,📺 流媒体
+  - GEOSITE,primevideo,📺 流媒体
+  - GEOSITE,telegram,💬 社交媒体
+  - GEOSITE,whatsapp,💬 社交媒体
+  - GEOSITE,line,💬 社交媒体
+  - GEOSITE,tiktok,💬 社交媒体
+  - GEOSITE,category-games,🎮 游戏加速
+
+  # 兜底规则
+  - MATCH,🌐 国外网站
