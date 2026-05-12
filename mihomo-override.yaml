@@ -1,11 +1,11 @@
-# Mihomo (Clash Meta) 覆写配置 - 增强版
-# 适用：Mihomo Party 覆写 或 WorkerVless2sub SUBCONFIG
+# Mihomo (Clash Meta) 修复版配置
+# 修复了 Loop Detected 循环引用问题
 
 proxy-groups:
-  # 核心切换
+  # 1. 核心汇总组（作为分流的总开关）
   - name: 🚀 节点选择
     type: select
-    proxies: [♻️ 自动选择, ⚖️ 负载均衡, 🏁 台湾节点, 🏁 香港节点, 🏁 日本节点, 🏁 美国节点, DIRECT]
+    proxies: [♻️ 自动选择, ⚖️ 负载均衡, 🏁 香港节点, 🏁 台湾节点, 🏁 日本节点, 🏁 美国节点, DIRECT]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
 
   - name: ♻️ 自动选择
@@ -13,7 +13,7 @@ proxy-groups:
     url: http://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    proxies: [] # 留空会自动继承订阅中的节点
+    include-all: true # 包含所有节点进行测速
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/auto.png
 
   - name: ⚖️ 负载均衡
@@ -21,39 +21,35 @@ proxy-groups:
     url: http://www.gstatic.com/generate_204
     interval: 300
     strategy: consistent-hashing
-    proxies: []
+    include-all: true # 包含所有节点进行均衡
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/balance.png
 
-  # 区域分组 (自动筛选)
+  # 2. 区域分流组（注意：这里不再包含“🚀 节点选择”，避免循环）
   - name: 🏁 香港节点
     type: select
     include-all: true
     filter: "(?i)香港|HK|Hong Kong|HONGKONG"
-    proxies: [🚀 节点选择]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/hongkong.png
 
   - name: 🏁 台湾节点
     type: select
     include-all: true
     filter: "(?i)台湾|TW|Taiwan|TAIWAN"
-    proxies: [🚀 节点选择]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/taiwan.png
 
   - name: 🏁 日本节点
     type: select
     include-all: true
     filter: "(?i)日本|JP|Japan|JAPAN"
-    proxies: [🚀 节点选择]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/japan.png
 
   - name: 🏁 美国节点
     type: select
     include-all: true
     filter: "(?i)美国|US|USA|United States"
-    proxies: [🚀 节点选择]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/usa.png
 
-  # 细分分流策略
+  # 3. 业务应用组（引用“🚀 节点选择”或特定区域组）
   - name: 🤖 人工智能
     type: select
     proxies: [🚀 节点选择, 🏁 美国节点, 🏁 日本节点, 🏁 台湾节点]
@@ -66,7 +62,7 @@ proxy-groups:
 
   - name: 📺 哔哩哔哩
     type: select
-    proxies: [DIRECT, 🏁 台湾节点, 🏁 香港节点]
+    proxies: [DIRECT, 🏁 台湾节点, 🏁 香港节点, 🚀 节点选择]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/bilibili.png
 
   - name: 📽️ 国内媒体
@@ -109,7 +105,7 @@ proxy-groups:
     proxies: [🚀 节点选择, DIRECT]
     icon: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/backdrops/select.png
 
-# 使用 Rule Providers 引用 ACL4SSR 核心规则
+# 规则部分保持不变
 rule-providers:
   openai:
     type: http
@@ -117,35 +113,30 @@ rule-providers:
     url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OpenAI.yaml"
     path: ./ruleset/openai.yaml
     interval: 86400
-
   bilibili:
     type: http
     behavior: classical
     url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Bilibili.yaml"
     path: ./ruleset/bilibili.yaml
     interval: 86400
-
   domestic_media:
     type: http
     behavior: classical
     url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/ChinaMedia.yaml"
     path: ./ruleset/china_media.yaml
     interval: 86400
-
   microsoft:
     type: http
     behavior: classical
     url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Microsoft.yaml"
     path: ./ruleset/microsoft.yaml
     interval: 86400
-
   onedrive:
     type: http
     behavior: classical
     url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OneDrive.yaml"
     path: ./ruleset/onedrive.yaml
     interval: 86400
-
   google_fcm:
     type: http
     behavior: classical
@@ -160,7 +151,6 @@ rules:
   - RULE-SET,microsoft,Ⓜ️ 微软服务
   - RULE-SET,onedrive,📧 微软云盘
   - RULE-SET,google_fcm,☁️ 谷歌FCM
-  # 基础分流
   - RULE-SET,google,📢 谷歌服务
   - RULE-SET,telegram,📲 电报消息
   - RULE-SET,netflix,🎬 奈飞视频
