@@ -88,3 +88,8 @@ cf.090227.xyz/cu:443#CF联通优选
 www.udacity.com:443#udacity.com
 bestproxy.onecf.eu.org:443#Mingyu反代优选
 xn--b6gac.eu.org:443#官方优选↗↘↗.eu.org系列
+*.cf.cnae.top:443#byoip-CF双栈-大陆推荐
+*.cloudflare.19931110.xyz:443#byoip-Cloudflare
+*.edgeone.19931110.xyz:443#byoip-EdgeOne
+*.netlify.19931110.xyz:443#byoip-Netlify
+*.vercel.19931110.xyz:443#byoip-Vercel
