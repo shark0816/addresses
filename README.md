@@ -29,19 +29,19 @@
 | 文件名 | 说明 |
 | --- | --- |
 | `addip.txt` | 优选 IP / 域名列表，由 CF Worker 自动定时更新 |
-| `Bot1.js` | **⭐ 推荐部署版本**（全数据源并行、GitHub 双超时、容错完善）|
-| `Bot1_new.txt` | 参考对比版本（改进思路来源，不强制使用）|
+| `Bot1(agent).js` | **⭐ 推荐部署版本**（Hermes 输出版本；全数据源并行、GitHub 双超时、容错完善）|
+| `Bot1_new(buddy).js` | 参考对比版本（WorkBuddy 版本；改进思路来源，不强制使用）|
 | `README.md` | 项目说明文档（本文件）|
 
-> 部署时**只粘贴 `Bot1.js` 的内容**进 Worker 即可，其余文件为说明/参考。
+> 部署时**只粘贴 `Bot1(agent).js` 的内容**进 Worker 即可，其余文件为说明/参考。
 
 ---
 
 ## 🔬 两个脚本版本对比
 
-`Bot1_new.txt` 是本项目的改进思路版（用于追溯逻辑演进），`Bot1.js` 是最终落地版。两者都已修正"时间戳垃圾混入""域名被砍"等早期 bug，差异主要在**性能与容错**：
+`Bot1_new(buddy).js`（WorkBuddy 版本）是本项目的改进思路参考版（用于追溯逻辑演进），`Bot1(agent).js`（Hermes 输出版本）是最终落地版。两者都已修正"时间戳垃圾混入""域名被砍"等早期 bug，差异主要在**性能与容错**：
 
-| 对比维度 | `Bot1_new.txt`（参考版） | `Bot1.js`（⭐ 推荐部署） |
+| 对比维度 | `Bot1_new(buddy).js`（WorkBuddy 参考版） | `Bot1(agent).js`（⭐ 推荐部署 · Hermes） |
 | --- | --- | --- |
 | 数据源拉取方式 | vps789 + uouin **串行**，bestcf 并行 | **全部 `Promise.all` 并行**，最坏耗时不超单源超时（≤12s）|
 | GitHub GET 超时 | `fetchText` 带超时 | `fetchWithTimeout` 带超时 |
@@ -56,7 +56,7 @@
 | 单源失败不影响全局 | ✅ | ✅ |
 | 空内容保护 / HTML 页过滤 / 全局去重 | ✅ | ✅ |
 
-**结论**：直接部署 `Bot1.js` 即可——更快（全并行）、更稳（GET/PUT 双超时 + 失败跳过）。若你确实需要 uouin 的 IPv6，可从 `Bot1_new.txt` 把那一行正则移植进 `Bot1.js`（约 1 行改动）。
+**结论**：直接部署 `Bot1(agent).js` 即可——更快（全并行）、更稳（GET/PUT 双超时 + 失败跳过）。若你确实需要 uouin 的 IPv6，可从 `Bot1_new(buddy).js` 把那一行正则移植进 `Bot1(agent).js`（约 1 行改动）。
 
 ---
 
@@ -107,7 +107,7 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 - 点击 **Deploy** 创建
 - 点击 **Edit code** 进入代码编辑界面
 - 全选删除默认代码
-- **粘贴 `Bot1.js` 的完整内容**（桌面上 `Bot1.js` 文件）
+- **粘贴 `Bot1(agent).js` 的完整内容**（桌面上 `Bot1(agent).js` 文件）
 - 点击右上角 **Save and deploy**
 
 ### 4. 配置 Worker 环境变量（关键）
@@ -153,5 +153,5 @@ https://raw.githubusercontent.com/shark0816/addresses/refs/heads/main/addip.txt
 | 版本 | 关键改动 |
 | --- | --- |
 | 早期线上版（原 Bot1.txt）| 存在 `07:02` 等时间戳垃圾混入、优选域名被砍、GitHub 无超时等问题 |
-| 改进参考版（Bot1_new.txt）| 引入 `isValidHost` / `parseAddressToken` 保留域名+过滤垃圾；中文安全 base64 + 无变化跳过；GitHub 409 重试；bestcf 并行 |
-| 落地版（Bot1.js）| 在参考版基础上：全部数据源并行拉取（≤12s）；GitHub GET/PUT 双超时；GET 非 404 失败跳过（不再 422）；修复 bestcf 并行后取值 `.value` 回归 |
+| 改进参考版（Bot1_new(buddy).js · WorkBuddy）| 引入 `isValidHost` / `parseAddressToken` 保留域名+过滤垃圾；中文安全 base64 + 无变化跳过；GitHub 409 重试；bestcf 并行 |
+| 落地版（Bot1(agent).js · Hermes）| 在参考版基础上：全部数据源并行拉取（≤12s）；GitHub GET/PUT 双超时；GET 非 404 失败跳过（不再 422）；修复 bestcf 并行后取值 `.value` 回归 |
